@@ -1,6 +1,6 @@
-import TempurPage from "./TempurPage";
+import SleepHouse from "./SleepHouse";
 import type { SleepHouseRegion } from "./SleepHouse";
 
 export default function PmaxPage({ region }: { region: SleepHouseRegion }) {
-  return <TempurPage pmax region={region} />;
+  return <SleepHouse pmax region={region} />;
 }

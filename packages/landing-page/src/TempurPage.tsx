@@ -17,7 +17,6 @@ import { useEffect, useRef, useState } from "react";
 import type { SleepHouseRegion } from "./SleepHouse";
 
 const FORM_WEBHOOK = "https://hook.us1.make.celonis.com/unxj1qznxqbeaseq1ms9rb4zxnp2u4vd";
-export const PMAX_FORM_WEBHOOK = "https://hook.us1.make.celonis.com/6u9g4xdmwxyo6vigqqb5ivc5q72y07ru";
 const WHATSAPP_MESSAGE = "Olá! Quero saber mais sobre a linha Tempur e falar com um especialista da Sleep House.";
 
 const differentials = [
@@ -149,22 +148,20 @@ function TempurButton({
   location,
   label = "Quero conhecer a linha Tempur",
   className = "",
-  formOnly = false,
 }: {
   region: SleepHouseRegion;
   location: string;
   label?: string;
   className?: string;
-  formOnly?: boolean;
 }) {
   return (
     <a
       className={`tempur-button ${className}`.trim()}
       data-cta-location={location}
-      href={formOnly ? "#formulario-pmax" : whatsappHref(region)}
-      onClick={() => track({ event: formOnly ? "form_cta_click" : "whatsapp_click", cta_location: location })}
-      rel={formOnly ? undefined : "noreferrer"}
-      target={formOnly ? undefined : "_blank"}
+      href={whatsappHref(region)}
+      onClick={() => track({ event: "whatsapp_click", cta_location: location })}
+      rel="noreferrer"
+      target="_blank"
     >
       <span>{label}</span>
       <ArrowRight aria-hidden="true" strokeWidth={1.8} />
@@ -172,7 +169,7 @@ function TempurButton({
   );
 }
 
-function LeadForm({ region, pmax = false }: { region: SleepHouseRegion; pmax?: boolean }) {
+function LeadForm({ region }: { region: SleepHouseRegion }) {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -186,14 +183,14 @@ function LeadForm({ region, pmax = false }: { region: SleepHouseRegion; pmax?: b
       regiao: String(data.get("regiao") ?? ""),
       interesse: "Linha Tempur",
       cidade: region.label,
-      versao: pmax ? "landing-page-tempur-pmax" : "landing-page-tempur",
+      versao: "landing-page-tempur",
       pagina: window.location.href,
       enviado_em: new Date().toISOString(),
     });
 
     try {
-      await fetch(pmax ? PMAX_FORM_WEBHOOK : FORM_WEBHOOK, { method: "POST", mode: "no-cors", body });
-      track({ event: "lead_form_submit", form_version: pmax ? "landing-page-tempur-pmax" : "landing-page-tempur" });
+      await fetch(FORM_WEBHOOK, { method: "POST", mode: "no-cors", body });
+      track({ event: "lead_form_submit", form_version: "landing-page-tempur" });
       setStatus("success");
       form.reset();
     } catch {
@@ -206,14 +203,14 @@ function LeadForm({ region, pmax = false }: { region: SleepHouseRegion; pmax?: b
       <div className="tempur-form-success" role="status">
         <span><Check aria-hidden="true" /></span>
         <h3>Recebemos seu contato.</h3>
-        <p>Um especialista da Sleep House vai falar com você em breve.</p>
-        {!pmax ? <TempurButton label="Continuar no WhatsApp" location="form_success" region={region} /> : null}
+        <p>Um especialista da Sleep House vai falar com você. Se preferir, continue agora pelo WhatsApp.</p>
+        <TempurButton label="Continuar no WhatsApp" location="form_success" region={region} />
       </div>
     );
   }
 
   return (
-    <form className="tempur-form" id={pmax ? "formulario-pmax" : undefined} onSubmit={submit}>
+    <form className="tempur-form" onSubmit={submit}>
       <div className="tempur-form-heading">
         <span>Atendimento personalizado</span>
         <h3>Prefere que a gente fale com você?</h3>
@@ -243,13 +240,13 @@ function LeadForm({ region, pmax = false }: { region: SleepHouseRegion; pmax?: b
         <span>{status === "sending" ? "Enviando..." : "Quero falar com um especialista"}</span>
         <ArrowRight aria-hidden="true" strokeWidth={1.8} />
       </button>
-      {status === "error" ? <p className="tempur-form-error" role="alert">Não foi possível enviar agora. Tente novamente.</p> : null}
+      {status === "error" ? <p className="tempur-form-error" role="alert">Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.</p> : null}
       <small>Seus dados serão usados apenas para este atendimento.</small>
     </form>
   );
 }
 
-export default function TempurPage({ region, pmax = false }: { region: SleepHouseRegion; pmax?: boolean }) {
+export default function TempurPage({ region }: { region: SleepHouseRegion }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const cursorDotRef = useRef<HTMLSpanElement>(null);
@@ -265,8 +262,8 @@ export default function TempurPage({ region, pmax = false }: { region: SleepHous
     document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
     document.querySelector('meta[property="og:image"]')?.setAttribute("content", `${region.domain}/videos/tempur-hero-poster.jpg`);
-    document.querySelector('link[rel="canonical"]')?.setAttribute("href", new URL(pmax ? "/pmax" : "/tempur", region.domain).href);
-    track({ event: "landing_version_view", page_variant: pmax ? "tempur-pmax" : "tempur" });
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", new URL("/tempur", region.domain).href);
+    track({ event: "landing_version_view" });
 
     const onScroll = () => setScrolled(window.scrollY > 24);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -283,7 +280,7 @@ export default function TempurPage({ region, pmax = false }: { region: SleepHous
       window.removeEventListener("scroll", onScroll);
       observer.disconnect();
     };
-  }, [pmax, region]);
+  }, [region]);
 
   useEffect(() => {
     const video = heroVideoRef.current;
@@ -510,7 +507,7 @@ export default function TempurPage({ region, pmax = false }: { region: SleepHous
           <a href="#duvidas" onClick={() => setMenuOpen(false)}>Dúvidas</a>
         </nav>
 
-        <TempurButton className="tempur-header-cta" formOnly={pmax} label="Falar com especialista" location="header" region={region} />
+        <TempurButton className="tempur-header-cta" label="Falar com especialista" location="header" region={region} />
         <button
           aria-expanded={menuOpen}
           aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
@@ -547,7 +544,7 @@ export default function TempurPage({ region, pmax = false }: { region: SleepHous
               <h1>Seu corpo sente a diferença antes mesmo de você explicar.</h1>
               <p className="tempur-hero-lead">Conheça a tecnologia Tempur, compare as opções e experimente o conforto pessoalmente com orientação especializada.</p>
               <div className="tempur-hero-actions">
-                <TempurButton formOnly={pmax} label={pmax ? "Preencher formulário" : undefined} location="hero" region={region} />
+                <TempurButton location="hero" region={region} />
                 <a className="tempur-text-link" href="#tecnologia">Entender a tecnologia <ArrowRight aria-hidden="true" /></a>
               </div>
               <ul className="tempur-hero-trust" aria-label="Diferenciais do atendimento">
@@ -669,7 +666,7 @@ export default function TempurPage({ region, pmax = false }: { region: SleepHous
                   </article>
                 ))}
               </div>
-              <TempurButton formOnly={pmax} label="Agendar uma experiência" location="experience" region={region} />
+              <TempurButton label="Agendar uma experiência" location="experience" region={region} />
             </div>
           </div>
         </section>
@@ -701,7 +698,7 @@ export default function TempurPage({ region, pmax = false }: { region: SleepHous
                 <span><MapPin aria-hidden="true" /> São Paulo</span>
                 <span><MapPin aria-hidden="true" /> Grande ABC</span>
               </div>
-              <TempurButton formOnly={pmax} label="Encontrar a melhor loja" location="location" region={region} />
+              <TempurButton label="Encontrar a melhor loja" location="location" region={region} />
             </div>
             <div className="tempur-location-media tempur-reveal">
               <img alt="Fachada de uma loja Sleep House com exposição Tempur" className="tempur-parallax" loading="lazy" src="/images/sleep-house/loja-fachada.jpg" />
@@ -749,14 +746,14 @@ export default function TempurPage({ region, pmax = false }: { region: SleepHous
             <div className="tempur-faq-heading tempur-reveal">
               <p className="tempur-section-label">Dúvidas frequentes</p>
               <h2>Antes de experimentar, vale saber.</h2>
-              <p>{pmax ? "Preencha o formulário e nosso time entrará em contato para ajudar." : "Ainda ficou com alguma dúvida? Nosso time conversa com você pelo WhatsApp."}</p>
-              <TempurButton formOnly={pmax} label="Tirar uma dúvida" location="faq" region={region} />
+              <p>Ainda ficou com alguma dúvida? Nosso time conversa com você pelo WhatsApp.</p>
+              <TempurButton label="Tirar uma dúvida" location="faq" region={region} />
             </div>
             <div className="tempur-faq-list tempur-reveal">
               {faqs.map((faq, index) => (
                 <details key={faq.question} open={index === 0}>
                   <summary><span>{faq.question}</span><ChevronDown aria-hidden="true" /></summary>
-                  <p>{pmax && faq.question === "A Sleep House vende online?" ? "Esta página não realiza compra direta. Preencha o formulário para receber uma orientação e agendar uma experiência presencial na loja." : faq.answer}</p>
+                  <p>{faq.answer}</p>
                 </details>
               ))}
             </div>
@@ -768,11 +765,11 @@ export default function TempurPage({ region, pmax = false }: { region: SleepHous
             <div className="tempur-conversion-copy tempur-reveal">
               <p className="tempur-section-label">Seu próximo passo</p>
               <h2>Conheça a linha Tempur com quem entende da sua escolha.</h2>
-              <p>{pmax ? "Preencha o formulário para receber um atendimento consultivo." : "Converse agora pelo WhatsApp ou deixe seus dados para receber um atendimento consultivo."}</p>
-              <TempurButton formOnly={pmax} label={pmax ? "Preencher formulário" : undefined} location="final" region={region} />
-              <span className="tempur-conversion-note">{pmax ? <Check aria-hidden="true" /> : <MessageCircle aria-hidden="true" />} Atendimento humano, direto e sem compromisso.</span>
+              <p>Converse agora pelo WhatsApp ou deixe seus dados para receber um atendimento consultivo.</p>
+              <TempurButton location="final" region={region} />
+              <span className="tempur-conversion-note"><MessageCircle aria-hidden="true" /> Atendimento humano, direto e sem compromisso.</span>
             </div>
-            <div className="tempur-reveal"><LeadForm pmax={pmax} region={region} /></div>
+            <div className="tempur-reveal"><LeadForm region={region} /></div>
           </div>
         </section>
       </main>
@@ -797,7 +794,7 @@ export default function TempurPage({ region, pmax = false }: { region: SleepHous
         </div>
       </footer>
 
-      <TempurButton className="tempur-floating-cta" formOnly={pmax} label={pmax ? "Preencher formulário" : "Falar no WhatsApp"} location="floating" region={region} />
+      <TempurButton className="tempur-floating-cta" label="Falar no WhatsApp" location="floating" region={region} />
       <div aria-hidden="true" className="custom-cursor tempur-custom-cursor">
         <span className="custom-cursor-dot" ref={cursorDotRef} />
         <span className="custom-cursor-ring" ref={cursorRingRef} />

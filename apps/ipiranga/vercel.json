@@ -6,6 +6,7 @@
   "rewrites": [
     { "source": "/tempur", "destination": "/index.html" },
     { "source": "/pmax", "destination": "/index.html" },
+    { "source": "/pmax/(.*)", "destination": "/index.html" },
     { "source": "/whats", "destination": "/index.html" },
     { "source": "/formulario", "destination": "/index.html" },
     { "source": "/formulario/etapas", "destination": "/index.html" },

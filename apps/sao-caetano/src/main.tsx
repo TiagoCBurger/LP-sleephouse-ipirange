@@ -9,6 +9,6 @@ const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    {pathname === "/pmax" ? <PmaxPage region={cityConfig} /> : <SleepHouse region={cityConfig} />}
+    {pathname.startsWith("/pmax") ? <PmaxPage region={cityConfig} /> : <SleepHouse region={cityConfig} />}
   </StrictMode>,
 );

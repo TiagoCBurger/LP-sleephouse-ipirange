@@ -34,6 +34,7 @@ const MOTION = {
 };
 
 const FORM_WEBHOOK = "https://hook.us1.make.celonis.com/unxj1qznxqbeaseq1ms9rb4zxnp2u4vd";
+const PMAX_FORM_WEBHOOK = "https://hook.us1.make.celonis.com/6u9g4xdmwxyo6vigqqb5ivc5q72y07ru";
 
 export type SleepHouseRegion = {
   key: "ipiranga" | "sao-caetano";
@@ -281,7 +282,7 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
-function MultiStepLeadForm({ region, offer }: { region: Region; offer?: string }) {
+function MultiStepLeadForm({ region, offer, pmax = false }: { region: Region; offer?: string; pmax?: boolean }) {
   const [answers, setAnswers] = useState<Record<string, string>>({
     p5: region.label,
     ...(offer ? { oferta: offer } : {}),
@@ -303,20 +304,20 @@ function MultiStepLeadForm({ region, offer }: { region: Region; offer?: string }
     const body = new URLSearchParams({
       ...answers,
       cidade: region.label,
-      versao: "formulario-multistep",
+      versao: pmax ? "landing-page-pmax" : "formulario-multistep",
       pagina: window.location.href,
       enviado_em: new Date().toISOString(),
     });
 
     try {
-      await fetch(FORM_WEBHOOK, { method: "POST", mode: "no-cors", body });
+      await fetch(pmax ? PMAX_FORM_WEBHOOK : FORM_WEBHOOK, { method: "POST", mode: "no-cors", body });
       (window as Window & { dataLayer?: Record<string, unknown>[] }).dataLayer?.push({
         event: "lead_form_submit",
         region: region.key,
-        form_version: "formulario-multistep",
+        form_version: pmax ? "landing-page-pmax" : "formulario-multistep",
         ...answers,
       });
-      window.location.assign("/obrigado");
+      window.location.assign(pmax ? "/pmax/obrigado" : "/obrigado");
     } catch {
       setStatus("idle");
     }
@@ -371,24 +372,26 @@ function MultiStepLeadForm({ region, offer }: { region: Region; offer?: string }
 function FormPage({
   region,
   offer,
+  pmax = false,
   cursorDotRef,
   cursorRingRef,
 }: {
   region: Region;
   offer?: string;
+  pmax?: boolean;
   cursorDotRef: React.RefObject<HTMLSpanElement | null>;
   cursorRingRef: React.RefObject<HTMLSpanElement | null>;
 }) {
   return (
     <main className="form-page brown-section">
-      <a className="form-page-logo" href="/" aria-label={`Voltar para Sleep House ${region.label}`}><img src="/brand/sleep-house/logo.svg" alt="Sleep House" /></a>
+      <a className="form-page-logo" href={pmax ? "/pmax" : "/"} aria-label={`Voltar para Sleep House ${region.label}`}><img src="/brand/sleep-house/logo.svg" alt="Sleep House" /></a>
       <div className="form-page-content">
         <p className="eyebrow">Sleep House {region.label}</p>
         <h1>Vamos encontrar o colchão ideal para você.</h1>
-        <p>{offer ? <>Você selecionou <strong>{offer}</strong>. Responda às perguntas para receber um atendimento personalizado.</> : "Leva menos de um minuto. Ao final, um consultor entra em contato pelo WhatsApp."}</p>
-        <MultiStepLeadForm offer={offer} region={region} />
+        <p>{offer ? <>Você selecionou <strong>{offer}</strong>. Responda às perguntas para receber um atendimento personalizado.</> : "Leva menos de um minuto. Ao final, um consultor entra em contato."}</p>
+        <MultiStepLeadForm offer={offer} pmax={pmax} region={region} />
       </div>
-      <a
+      {!pmax ? <a
         className="form-page-whatsapp"
         href={whatsappHref(region, `Oi! Estou preenchendo o formulário da Sleep House ${region.label} e quero falar com um consultor.`)}
         target="_blank"
@@ -396,7 +399,7 @@ function FormPage({
         aria-label={`Falar no WhatsApp com a Sleep House ${region.label}`}
       >
         <WhatsAppIcon />
-      </a>
+      </a> : null}
       <div className="custom-cursor" aria-hidden="true">
         <span ref={cursorDotRef} className="custom-cursor-dot" />
         <span ref={cursorRingRef} className="custom-cursor-ring" />
@@ -407,21 +410,23 @@ function FormPage({
 
 function ThankYouPage({
   region,
+  pmax = false,
   cursorDotRef,
   cursorRingRef,
 }: {
   region: Region;
+  pmax?: boolean;
   cursorDotRef: React.RefObject<HTMLSpanElement | null>;
   cursorRingRef: React.RefObject<HTMLSpanElement | null>;
 }) {
   return (
     <main className="thank-you-page brown-section">
-      <a className="form-page-logo" href="/" aria-label={`Voltar para Sleep House ${region.label}`}><img src="/brand/sleep-house/logo.svg" alt="Sleep House" /></a>
+      <a className="form-page-logo" href={pmax ? "/pmax" : "/"} aria-label={`Voltar para Sleep House ${region.label}`}><img src="/brand/sleep-house/logo.svg" alt="Sleep House" /></a>
       <div className="thank-you-content">
         <span>✓</span>
         <h1>Obrigado!</h1>
-        <p>Recebemos suas respostas. Um consultor da Sleep House {region.label} vai falar com você pelo WhatsApp.</p>
-        <a className="lp-primary-button" href="/">Voltar para o site <Arrow /></a>
+        <p>Recebemos suas respostas. Um consultor da Sleep House {region.label} vai falar com você em breve.</p>
+        <a className="lp-primary-button" href={pmax ? "/pmax" : "/"}>Voltar para o site <Arrow /></a>
       </div>
       <div className="custom-cursor" aria-hidden="true">
         <span ref={cursorDotRef} className="custom-cursor-dot" />
@@ -471,15 +476,15 @@ function SectionTitle({
   );
 }
 
-export default function SleepHouse({ region }: { region: SleepHouseRegion }) {
+export default function SleepHouse({ region, pmax = false }: { region: SleepHouseRegion; pmax?: boolean }) {
   const rawPathname = typeof window === "undefined" ? "/" : window.location.pathname;
   const pathname = rawPathname.replace(/\/+$/, "") || "/";
   const searchParams = typeof window === "undefined" ? null : new URLSearchParams(window.location.search);
   const selectedOffer = searchParams?.get("oferta") ?? undefined;
   const formVersion = pathname !== "/whats";
-  const formPage = pathname === "/formulario/etapas";
-  const thankYouPage = pathname === "/obrigado";
-  const formPageHref = "/formulario/etapas";
+  const formPage = pmax ? pathname === "/pmax/formulario" : pathname === "/formulario/etapas";
+  const thankYouPage = pmax ? pathname === "/pmax/obrigado" : pathname === "/obrigado";
+  const formPageHref = pmax ? "/pmax/formulario" : "/formulario/etapas";
   const conversionHref = formVersion ? formPageHref : whatsappHref(region);
   const conversionLabel = formVersion ? "Encontrar o colchão ideal" : "Falar no WhatsApp";
   const [introPhase, setIntroPhase] = useState<
@@ -513,7 +518,7 @@ export default function SleepHouse({ region }: { region: SleepHouseRegion }) {
     (window as Window & { dataLayer?: Record<string, unknown>[] }).dataLayer?.push({
       event: "landing_version_view",
       region: region.key,
-      form_version: thankYouPage ? "obrigado" : formVersion || formPage ? "formulario" : "whatsapp",
+      form_version: pmax ? "landing-page-pmax" : thankYouPage ? "obrigado" : formVersion || formPage ? "formulario" : "whatsapp",
     });
     const trackWhatsApp = (event: MouseEvent) => {
       const link = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="https://wa.me/"]');
@@ -526,7 +531,7 @@ export default function SleepHouse({ region }: { region: SleepHouseRegion }) {
     };
     document.addEventListener("click", trackWhatsApp);
     return () => document.removeEventListener("click", trackWhatsApp);
-  }, [formPage, formVersion, pathname, region, thankYouPage]);
+  }, [formPage, formVersion, pathname, pmax, region, thankYouPage]);
 
   useEffect(() => {
     const introStorageKey = `sleep-house-${region.key}:intro-seen:v1`;
@@ -1015,8 +1020,8 @@ export default function SleepHouse({ region }: { region: SleepHouseRegion }) {
     };
   }, []);
 
-  if (thankYouPage) return <ThankYouPage cursorDotRef={cursorDotRef} cursorRingRef={cursorRingRef} region={region} />;
-  if (formPage) return <FormPage cursorDotRef={cursorDotRef} cursorRingRef={cursorRingRef} offer={selectedOffer} region={region} />;
+  if (thankYouPage) return <ThankYouPage cursorDotRef={cursorDotRef} cursorRingRef={cursorRingRef} pmax={pmax} region={region} />;
+  if (formPage) return <FormPage cursorDotRef={cursorDotRef} cursorRingRef={cursorRingRef} offer={selectedOffer} pmax={pmax} region={region} />;
 
   return (
     <>
@@ -1541,9 +1546,9 @@ export default function SleepHouse({ region }: { region: SleepHouseRegion }) {
             ↑
           </button>
         ) : null}
-        <a href={whatsappHref(region)} target="_blank" rel="noreferrer" aria-label="WhatsApp">
+        {!pmax ? <a href={whatsappHref(region)} target="_blank" rel="noreferrer" aria-label="WhatsApp">
           <WhatsAppIcon />
-        </a>
+        </a> : null}
         <a className="floating-primary" href={conversionHref} target={formVersion ? undefined : "_blank"} rel={formVersion ? undefined : "noreferrer"} aria-label="Falar com consultor">
           <i />
           →
