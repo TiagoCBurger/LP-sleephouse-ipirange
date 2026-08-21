@@ -75,6 +75,11 @@ const formQuestions = [
     label: "Para quando é a compra?",
     options: ["O mais rápido possível", "Este mês", "Nos próximos 3 meses", "Apenas pesquisando preços"],
   },
+  {
+    id: "p5",
+    label: "Qual loja fica mais perto de você?",
+    options: ["Ipiranga", "São Caetano"],
+  },
 ] as const;
 
 const brands = [
