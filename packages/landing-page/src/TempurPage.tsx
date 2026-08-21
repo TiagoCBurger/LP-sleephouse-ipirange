@@ -121,7 +121,7 @@ const faqs = [
   },
   {
     question: "Vocês atendem quais regiões?",
-    answer: "Atendemos clientes de São Paulo e do Grande ABC, com lojas e consultores preparados para apresentar a linha Tempur.",
+    answer: "Atendemos clientes de Ipiranga e São Caetano, com lojas e consultores preparados para apresentar a linha Tempur.",
   },
   {
     question: "Como funciona o atendimento consultivo?",
@@ -254,8 +254,8 @@ export default function TempurPage({ region }: { region: SleepHouseRegion }) {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    const title = "Colchões Tempur em São Paulo e Grande ABC | Sleep House";
-    const description = "Conheça e experimente a linha Tempur com atendimento especializado da Sleep House para São Paulo e Grande ABC.";
+    const title = "Colchões Tempur em Ipiranga e São Caetano | Sleep House";
+    const description = "Conheça e experimente a linha Tempur com atendimento especializado da Sleep House para Ipiranga e São Caetano.";
     document.documentElement.classList.add("tempur-route");
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
@@ -550,7 +550,7 @@ export default function TempurPage({ region }: { region: SleepHouseRegion }) {
               <ul className="tempur-hero-trust" aria-label="Diferenciais do atendimento">
                 <li><Check aria-hidden="true" /> Teste presencial</li>
                 <li><Check aria-hidden="true" /> Atendimento consultivo</li>
-                <li><Check aria-hidden="true" /> São Paulo e Grande ABC</li>
+                <li><Check aria-hidden="true" /> Ipiranga e São Caetano</li>
               </ul>
             </div>
             <div className="tempur-hero-note">
@@ -692,11 +692,11 @@ export default function TempurPage({ region }: { region: SleepHouseRegion }) {
           <div className="tempur-shell tempur-location-grid">
             <div className="tempur-location-copy tempur-reveal">
               <p className="tempur-section-label">Perto de você</p>
-              <h2>Atendimento para São Paulo e Grande ABC.</h2>
+              <h2>Atendimento para Ipiranga e São Caetano.</h2>
               <p>Fale com um especialista para conhecer os modelos disponíveis e encontrar a loja mais conveniente para sua experiência.</p>
               <div className="tempur-location-badges">
-                <span><MapPin aria-hidden="true" /> São Paulo</span>
-                <span><MapPin aria-hidden="true" /> Grande ABC</span>
+                <span><MapPin aria-hidden="true" /> Ipiranga</span>
+                <span><MapPin aria-hidden="true" /> São Caetano</span>
               </div>
               <TempurButton label="Encontrar a melhor loja" location="location" region={region} />
             </div>
@@ -781,7 +781,7 @@ export default function TempurPage({ region }: { region: SleepHouseRegion }) {
             <span aria-hidden="true" />
             <img alt="Tempur" src="/brand/optimized/tempur.webp" />
           </div>
-          <p>Linha Tempur com atendimento especializado Sleep House para São Paulo e Grande ABC.</p>
+          <p>Linha Tempur com atendimento especializado Sleep House para Ipiranga e São Caetano.</p>
           <nav aria-label="Links do rodapé">
             <a href="/">Site Sleep House</a>
             <a href="#tecnologia">Tecnologia</a>

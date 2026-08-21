@@ -2,8 +2,8 @@ import type { SleepHouseRegion } from "@sleep-house/landing-page";
 
 export const cityConfig: SleepHouseRegion = {
   key: "ipiranga",
-  label: "São Paulo e Grande ABC",
-  location: "São Paulo e Grande ABC",
+  label: "Ipiranga e São Caetano",
+  location: "Ipiranga e São Caetano",
   domain: import.meta.env.VITE_SITE_URL || "https://www.sleephouseipiranga.com.br",
   whatsapp: "5511985608380",
   stores: [
