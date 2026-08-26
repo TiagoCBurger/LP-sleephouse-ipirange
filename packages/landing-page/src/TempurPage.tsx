@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  Award,
   Check,
   ChevronDown,
   Layers3,
@@ -7,17 +8,48 @@ import {
   Menu,
   MessageCircle,
   Move3D,
+  Rocket,
   ScanSearch,
   ShieldCheck,
   Sparkles,
   Store,
+  Thermometer,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { SleepHouseRegion } from "./SleepHouse";
+import { captureTrackingParams } from "./tracking";
 
-const FORM_WEBHOOK = "https://hook.us1.make.celonis.com/unxj1qznxqbeaseq1ms9rb4zxnp2u4vd";
+const TEMPUR_FORM_WEBHOOK = "https://hook.us1.make.celonis.com/0f3y9xvvji46epnlrhe1yc47gh4jqa39";
 const WHATSAPP_MESSAGE = "Olá! Quero saber mais sobre a linha Tempur e falar com um especialista da Sleep House.";
+
+const tempurFormQuestions = [
+  {
+    id: "interesse",
+    label: "O que você está buscando?",
+    options: ["Colchão Tempur", "Travesseiro Tempur", "Base ajustável ErgoMotion", "Ainda não sei, quero orientação"],
+  },
+  {
+    id: "tamanho",
+    label: "Qual o tamanho que você busca?",
+    options: ["King", "Queen", "Casal", "Solteiro", "Medida especial"],
+  },
+  {
+    id: "firmeza",
+    label: "Qual sua preferência de firmeza?",
+    options: ["Macio", "Intermediário", "Firme", "Quero ajuda do especialista"],
+  },
+  {
+    id: "prazo",
+    label: "Para quando é a compra?",
+    options: ["O mais rápido possível", "Este mês", "Nos próximos 3 meses", "Apenas pesquisando"],
+  },
+  {
+    id: "regiao",
+    label: "Qual loja fica mais perto de você?",
+    options: ["Ipiranga", "São Caetano"],
+  },
+] as const;
 
 const differentials = [
   {
@@ -88,6 +120,57 @@ const productGallery = [
     eyebrow: "Acabamento TEMPUR®",
     title: "Detalhes que você pode ver e sentir",
     className: "tempur-product-card--detail",
+  },
+  {
+    image: "/images/tempur/lifestyle-casal-quarto-claro.webp",
+    eyebrow: "No dia a dia",
+    title: "Conforto que cabe na rotina a dois",
+    className: "tempur-product-card--detail",
+  },
+  {
+    image: "/images/tempur/lifestyle-casal-cabeceira.webp",
+    eyebrow: "Momentos de leveza",
+    title: "Espaço para relaxar e desconectar",
+    className: "tempur-product-card--detail",
+  },
+  {
+    image: "/images/tempur/lifestyle-mulher-textura-colchao.webp",
+    eyebrow: "Textura TEMPUR®",
+    title: "Uma superfície que convida ao descanso",
+    className: "tempur-product-card--detail",
+  },
+  {
+    image: "/images/tempur/lifestyle-tablet-cama.webp",
+    eyebrow: "Seu tempo, seu ritmo",
+    title: "Confortável em qualquer momento do dia",
+    className: "tempur-product-card--detail",
+  },
+] as const;
+
+const spaceFeatures = [
+  {
+    eyebrow: "Postura de descanso",
+    title: "Posição Gravidade Zero",
+    text: "Inspirada na postura neutra adotada por astronautas em órbita — com as pernas mais altas que o coração —, a Posição Gravidade Zero melhora a circulação sanguínea e alivia a pressão venosa. Com a base ajustável ErgoMotion, você encontra essa posição com o toque de um controle.",
+    image: "/images/tempur/nasa-gravidade-zero-astronauta.webp",
+    alt: "Astronauta em caminhada espacial, referência para a Posição Gravidade Zero desenvolvida pela Tempur",
+    reverse: false,
+  },
+  {
+    eyebrow: "Material adaptativo",
+    title: "Camadas TEMPUR PRO® Plus SmartCool",
+    text: "Por dentro do TEMPUR PRO® Plus SmartCool Soft está o colchão mais adaptável já criado pela marca: camadas que se moldam ao formato, ao peso e à temperatura do corpo, unindo a ciência original da NASA a décadas de pesquisa própria da TEMPUR®.",
+    image: "/images/tempur/tempur-pro-plus-camadas-smartcool.webp",
+    alt: "Corte em camadas do colchão TEMPUR PRO Plus SmartCool Soft sobre um fundo estrelado",
+    reverse: true,
+  },
+  {
+    eyebrow: "Ajuste personalizado",
+    title: "Base ErgoMotion",
+    text: "Eleve a cabeceira para ler ou assistir à TV, incline os pés para relaxar ou alcance a Posição Gravidade Zero — tudo ajustável ao toque de um controle, respeitando a preferência de cada pessoa que divide a cama.",
+    image: "/images/tempur/ergomotion-base-ajustavel.webp",
+    alt: "Mulher lendo relaxada em uma cama com a base ajustável ErgoMotion inclinada",
+    reverse: false,
   },
 ] as const;
 
@@ -170,29 +253,36 @@ function TempurButton({
 }
 
 function LeadForm({ region }: { region: SleepHouseRegion }) {
+  const [tracking] = useState(() => captureTrackingParams());
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [step, setStep] = useState(0);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const isContactStep = step === tempurFormQuestions.length;
+  const question = tempurFormQuestions[step];
+
+  const selectAnswer = (id: string, option: string) => {
+    setAnswers((current) => ({ ...current, [id]: option }));
+    window.setTimeout(() => setStep((current) => Math.min(current + 1, tempurFormQuestions.length)), 180);
+  };
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!answers.nome || !answers.whatsapp || answers.consentimento !== "sim") return;
     setStatus("sending");
-    const form = event.currentTarget;
-    const data = new FormData(form);
     const body = new URLSearchParams({
-      nome: String(data.get("nome") ?? ""),
-      whatsapp: String(data.get("whatsapp") ?? ""),
-      regiao: String(data.get("regiao") ?? ""),
-      interesse: "Linha Tempur",
+      ...answers,
+      interesse: answers.interesse ?? "Linha Tempur",
       cidade: region.label,
-      versao: "landing-page-tempur",
+      versao: "landing-page-tempur-multistep",
       pagina: window.location.href,
       enviado_em: new Date().toISOString(),
+      ...tracking,
     });
 
     try {
-      await fetch(FORM_WEBHOOK, { method: "POST", mode: "no-cors", body });
-      track({ event: "lead_form_submit", form_version: "landing-page-tempur" });
+      await fetch(TEMPUR_FORM_WEBHOOK, { method: "POST", mode: "no-cors", body });
+      track({ event: "lead_form_submit", form_version: "landing-page-tempur-multistep", ...answers, ...tracking });
       setStatus("success");
-      form.reset();
     } catch {
       setStatus("error");
     }
@@ -210,38 +300,93 @@ function LeadForm({ region }: { region: SleepHouseRegion }) {
   }
 
   return (
-    <form className="tempur-form" onSubmit={submit}>
+    <form className="tempur-form tempur-form--multistep" onSubmit={submit}>
+      {Object.entries(tracking).map(([key, value]) => (value ? <input key={key} name={key} type="hidden" value={value} /> : null))}
       <div className="tempur-form-heading">
         <span>Atendimento personalizado</span>
-        <h3>Prefere que a gente fale com você?</h3>
-        <p>Deixe seus dados. Um especialista entra em contato para entender o que você busca.</p>
+        <h3>Vamos montar sua recomendação Tempur</h3>
+        <p>Responda algumas perguntas rápidas. Ao final, um especialista entra em contato.</p>
       </div>
-      <label>
-        <span>Nome</span>
-        <input autoComplete="name" name="nome" placeholder="Como podemos chamar você?" required type="text" />
-      </label>
-      <label>
-        <span>WhatsApp</span>
-        <input autoComplete="tel" inputMode="tel" name="whatsapp" placeholder="(11) 99999-9999" required type="tel" />
-      </label>
-      <label>
-        <span>Região</span>
-        <select defaultValue="" name="regiao" required>
-          <option disabled value="">Onde você gostaria de ser atendido?</option>
-          <option value="Ipiranga">Ipiranga</option>
-          <option value="São Caetano">São Caetano</option>
-        </select>
-      </label>
-      <label className="tempur-consent">
-        <input name="consentimento" required type="checkbox" />
-        <span>Autorizo o contato da Sleep House sobre a linha Tempur.</span>
-      </label>
-      <button className="tempur-button tempur-form-submit" disabled={status === "sending"} type="submit">
-        <span>{status === "sending" ? "Enviando..." : "Quero falar com um especialista"}</span>
-        <ArrowRight aria-hidden="true" strokeWidth={1.8} />
-      </button>
-      {status === "error" ? <p className="tempur-form-error" role="alert">Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.</p> : null}
-      <small>Seus dados serão usados apenas para este atendimento.</small>
+      <div className="tempur-form-progress" aria-label={`Etapa ${step + 1} de ${tempurFormQuestions.length + 1}`}>
+        <span style={{ transform: `scaleX(${(step + 1) / (tempurFormQuestions.length + 1)})` }} />
+      </div>
+      <p className="tempur-form-step">Etapa {step + 1} de {tempurFormQuestions.length + 1}</p>
+
+      {!isContactStep && question ? (
+        <fieldset key={question.id}>
+          <legend>{question.label}</legend>
+          <div className="tempur-form-options">
+            {question.options.map((option) => (
+              <label className={answers[question.id] === option ? "is-selected" : ""} key={option}>
+                <input
+                  checked={answers[question.id] === option}
+                  name={question.id}
+                  onChange={() => selectAnswer(question.id, option)}
+                  type="radio"
+                  value={option}
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ) : (
+        <fieldset className="tempur-form-contact">
+          <legend>Como podemos falar com você?</legend>
+          <label>
+            <span>Nome</span>
+            <input
+              autoComplete="name"
+              name="nome"
+              onChange={(event) => setAnswers((current) => ({ ...current, nome: event.target.value }))}
+              placeholder="Como podemos chamar você?"
+              required
+              type="text"
+              value={answers.nome ?? ""}
+            />
+          </label>
+          <label>
+            <span>WhatsApp</span>
+            <input
+              autoComplete="tel"
+              inputMode="tel"
+              name="whatsapp"
+              onChange={(event) => setAnswers((current) => ({ ...current, whatsapp: event.target.value }))}
+              placeholder="(11) 99999-9999"
+              required
+              type="tel"
+              value={answers.whatsapp ?? ""}
+            />
+          </label>
+          <label>
+            <span>E-mail <small>(opcional)</small></span>
+            <input
+              autoComplete="email"
+              name="email"
+              onChange={(event) => setAnswers((current) => ({ ...current, email: event.target.value }))}
+              type="email"
+              value={answers.email ?? ""}
+            />
+          </label>
+          <label className="tempur-consent">
+            <input
+              checked={answers.consentimento === "sim"}
+              name="consentimento"
+              onChange={(event) => setAnswers((current) => ({ ...current, consentimento: event.target.checked ? "sim" : "" }))}
+              required
+              type="checkbox"
+            />
+            <span>Autorizo o contato da Sleep House sobre a linha Tempur.</span>
+          </label>
+          <button className="tempur-button tempur-form-submit" disabled={status === "sending"} type="submit">
+            <span>{status === "sending" ? "Enviando..." : "Quero falar com um especialista"}</span>
+            <ArrowRight aria-hidden="true" strokeWidth={1.8} />
+          </button>
+          {status === "error" ? <p className="tempur-form-error" role="alert">Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.</p> : null}
+          <small>Seus dados serão usados apenas para este atendimento.</small>
+        </fieldset>
+      )}
+      {step > 0 ? <button className="tempur-form-back" onClick={() => setStep((current) => current - 1)} type="button">Voltar</button> : null}
     </form>
   );
 }
@@ -501,6 +646,7 @@ export default function TempurPage({ region }: { region: SleepHouseRegion }) {
 
         <nav aria-label="Navegação principal" className={menuOpen ? "is-open" : ""}>
           <a href="#tecnologia" onClick={() => setMenuOpen(false)}>Tecnologia</a>
+          <a href="#nasa" onClick={() => setMenuOpen(false)}>Origem NASA</a>
           <a href="#produtos" onClick={() => setMenuOpen(false)}>Produtos</a>
           <a href="#experiencia" onClick={() => setMenuOpen(false)}>Experimente</a>
           <a href="#depoimentos" onClick={() => setMenuOpen(false)}>Depoimentos</a>
@@ -593,7 +739,7 @@ export default function TempurPage({ region }: { region: SleepHouseRegion }) {
             <p className="tempur-section-label">Por dentro da tecnologia</p>
             <div className="tempur-intro-heading">
               <h2>Um material que se adapta. Uma sensação que só você pode avaliar.</h2>
-              <p>Desenvolvido a partir de tecnologia espacial, o material TEMPUR® responde ao corpo de forma progressiva. O resultado não é uma promessa genérica: é uma experiência de conforto que vale comparar pessoalmente.</p>
+              <p>Desenvolvido originalmente pela NASA e aprimorado ao longo de décadas de pesquisa própria, o material TEMPUR® responde ao corpo de forma progressiva. O resultado não é uma promessa genérica: é uma experiência de conforto que vale comparar pessoalmente.</p>
             </div>
             <div className="tempur-differentials">
               {differentials.map((item) => (
@@ -607,6 +753,44 @@ export default function TempurPage({ region }: { region: SleepHouseRegion }) {
                 </article>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="tempur-space" id="nasa">
+          <div className="tempur-shell tempur-space-intro tempur-reveal">
+            <div className="tempur-space-intro-copy">
+              <p className="tempur-section-label">Origem espacial</p>
+              <h2>A única marca de colchões certificada pela NASA.</h2>
+              <p className="tempur-space-lead">Na década de 1970, a NASA desenvolveu um material viscoelástico para proteger astronautas da pressão extrema durante o lançamento das naves. Décadas de pesquisa depois, essa mesma ciência resultou no material TEMPUR® — hoje reconhecido pela Space Foundation com o selo Certified Space Technology, que nenhuma outra marca de colchões possui.</p>
+              <ul className="tempur-space-badges">
+                <li><Rocket aria-hidden="true" strokeWidth={1.6} /> Origem no programa espacial da NASA</li>
+                <li><Award aria-hidden="true" strokeWidth={1.6} /> Selo Certified Space Technology</li>
+                <li><Thermometer aria-hidden="true" strokeWidth={1.6} /> Camadas que respondem ao calor do corpo</li>
+              </ul>
+            </div>
+            <figure className="tempur-space-seal">
+              <img alt="Selo Certified Space Technology da Space Foundation, que certifica a tecnologia TEMPUR® como tecnologia espacial" loading="lazy" src="/images/tempur/nasa-space-certified-technology.webp" />
+              <figcaption>Única marca de colchões reconhecida pela NASA</figcaption>
+            </figure>
+          </div>
+
+          <div className="tempur-shell tempur-space-features">
+            {spaceFeatures.map((feature) => (
+              <article className={`tempur-space-feature ${feature.reverse ? "tempur-space-feature--reverse" : ""}`.trim()} key={feature.title}>
+                <div className="tempur-space-feature-media tempur-reveal">
+                  <img alt={feature.alt} className="tempur-parallax" loading="lazy" src={feature.image} />
+                </div>
+                <div className="tempur-space-feature-copy tempur-reveal">
+                  <small>{feature.eyebrow}</small>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="tempur-shell tempur-space-cta tempur-reveal">
+            <TempurButton label="Quero sentir a tecnologia Tempur" location="nasa" region={region} />
           </div>
         </section>
 
