@@ -22,6 +22,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { captureTrackingParams } from "./tracking";
 
 const MOTION = {
   ease: "power3.out",
@@ -288,6 +289,7 @@ const WhatsAppIcon = () => (
 );
 
 function MultiStepLeadForm({ region, offer, pmax = false }: { region: Region; offer?: string; pmax?: boolean }) {
+  const [tracking] = useState(() => captureTrackingParams());
   const [answers, setAnswers] = useState<Record<string, string>>({
     p5: region.label,
     ...(offer ? { oferta: offer } : {}),
@@ -312,6 +314,7 @@ function MultiStepLeadForm({ region, offer, pmax = false }: { region: Region; of
       versao: pmax ? "landing-page-pmax" : "formulario-multistep",
       pagina: window.location.href,
       enviado_em: new Date().toISOString(),
+      ...tracking,
     });
 
     try {
@@ -321,6 +324,7 @@ function MultiStepLeadForm({ region, offer, pmax = false }: { region: Region; of
         region: region.key,
         form_version: pmax ? "landing-page-pmax" : "formulario-multistep",
         ...answers,
+        ...tracking,
       });
       window.location.assign(pmax ? "/pmax/obrigado" : "/obrigado");
     } catch {
@@ -330,6 +334,7 @@ function MultiStepLeadForm({ region, offer, pmax = false }: { region: Region; of
 
   return (
     <form className="lead-form lead-form--multistep" onSubmit={submit}>
+      {Object.entries(tracking).map(([key, value]) => (value ? <input key={key} name={key} type="hidden" value={value} /> : null))}
       <div className="lead-form-progress" aria-label={`Etapa ${step + 1} de ${formQuestions.length + 1}`}>
         <span style={{ transform: `scaleX(${(step + 1) / (formQuestions.length + 1)})` }} />
       </div>

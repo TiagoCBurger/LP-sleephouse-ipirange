@@ -5181,6 +5181,166 @@ html[data-cursor-interactive] .custom-cursor-ring {
   transition: color 0.45s;
 }
 
+.tempur-space {
+  padding-block: clamp(6.5rem, 10vw, 10rem);
+  color: white;
+  background: var(--tempur-navy);
+}
+
+.tempur-space-intro {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  align-items: center;
+  gap: clamp(3rem, 7vw, 6rem);
+  margin-bottom: clamp(4.5rem, 9vw, 8rem);
+}
+
+.tempur-space-intro .tempur-section-label {
+  color: var(--tempur-gold);
+}
+
+.tempur-space-intro h2 {
+  margin: 1.7rem 0 1.6rem;
+}
+
+.tempur-space-lead {
+  max-width: 600px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.98rem;
+  line-height: 1.75;
+}
+
+.tempur-space-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 2.2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tempur-space-badges li {
+  display: inline-flex;
+  gap: 0.55rem;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  padding: 0.6rem 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.76rem;
+  line-height: 1.3;
+}
+
+.tempur-space-badges svg {
+  width: 15px;
+  height: 15px;
+  color: var(--tempur-gold);
+  flex-shrink: 0;
+}
+
+.tempur-space-seal {
+  position: relative;
+  margin: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--tempur-navy-soft);
+}
+
+.tempur-space-seal img {
+  display: block;
+  width: 100%;
+  height: clamp(280px, 32vw, 420px);
+  object-fit: cover;
+}
+
+.tempur-space-seal figcaption {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  padding: 0.85rem 1rem;
+  background: rgba(6, 24, 36, 0.86);
+  backdrop-filter: blur(12px);
+  color: var(--tempur-gold);
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.tempur-space-features {
+  display: grid;
+  gap: clamp(4.5rem, 9vw, 8rem);
+}
+
+.tempur-space-feature {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.86fr) minmax(340px, 1.14fr);
+  align-items: center;
+  gap: clamp(3rem, 6vw, 6rem);
+}
+
+.tempur-space-feature--reverse {
+  grid-template-columns: minmax(340px, 1.14fr) minmax(320px, 0.86fr);
+}
+
+.tempur-space-feature--reverse .tempur-space-feature-media {
+  order: 2;
+}
+
+.tempur-space-feature--reverse .tempur-space-feature-copy {
+  order: 1;
+}
+
+.tempur-space-feature-media {
+  position: relative;
+  min-height: 460px;
+  overflow: hidden;
+  background: var(--tempur-navy-soft);
+}
+
+.tempur-space-feature-media img {
+  width: 100%;
+  height: 100%;
+  min-height: 460px;
+  object-fit: cover;
+  transition: transform 0.9s var(--ease);
+}
+
+.tempur-space-feature-media:hover img {
+  transform: scale(1.035);
+}
+
+.tempur-space-feature-copy small {
+  color: var(--tempur-gold);
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.tempur-space-feature-copy h3 {
+  margin: 0.7rem 0 1rem;
+  font-family: var(--display-font);
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+  font-weight: 520;
+  letter-spacing: -0.03em;
+}
+
+.tempur-space-feature-copy p {
+  max-width: 520px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+.tempur-space-cta {
+  margin-top: clamp(4.5rem, 9vw, 8rem);
+  text-align: center;
+}
+
 .tempur-products {
   padding-block: clamp(6.5rem, 10vw, 10rem);
   color: white;
@@ -6026,6 +6186,117 @@ html[data-cursor-interactive] .custom-cursor-ring {
   background: var(--tempur-paper);
 }
 
+.tempur-form--multistep {
+  min-height: 480px;
+}
+
+.tempur-form fieldset {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.tempur-form legend {
+  padding: 0;
+  margin-bottom: 1.1rem;
+  color: var(--tempur-ink);
+  font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+  font-weight: 540;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.tempur-form-progress {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--tempur-line);
+}
+
+.tempur-form-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: var(--tempur-blue);
+  transition: transform 0.25s ease;
+}
+
+.tempur-form-step {
+  margin: 0.9rem 0 1.6rem;
+  color: var(--tempur-muted);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tempur-form-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.tempur-form-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 52px;
+  border: 1px solid var(--tempur-line);
+  padding: 0.75rem 0.9rem;
+  color: var(--tempur-ink);
+  background: white;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+}
+
+.tempur-form-options label.is-selected {
+  border-color: var(--tempur-blue);
+  color: var(--tempur-blue);
+  background: rgba(36, 64, 142, 0.07);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tempur-form-options label:hover {
+    border-color: var(--tempur-blue-light);
+  }
+}
+
+.tempur-form-options input {
+  accent-color: var(--tempur-blue);
+}
+
+.tempur-form-contact > label:not(.tempur-consent) {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.tempur-form-contact > label:first-child {
+  margin-top: 0;
+}
+
+.tempur-form-contact > label > span {
+  color: var(--tempur-ink);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.tempur-form-back {
+  display: block;
+  margin: 1.3rem auto 0;
+  border: 0;
+  padding: 0.4rem;
+  color: var(--tempur-muted);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+}
+
 .tempur-form-heading {
   margin-bottom: 2rem;
 }
@@ -6124,7 +6395,8 @@ html[data-cursor-interactive] .custom-cursor-ring {
   opacity: 0.65;
 }
 
-.tempur-form > small {
+.tempur-form > small,
+.tempur-form-contact > small {
   display: block;
   margin-top: 0.8rem;
   color: var(--tempur-muted);
@@ -6401,8 +6673,25 @@ html[data-cursor-interactive] .tempur-custom-cursor .custom-cursor-ring {
   .tempur-guidance-grid,
   .tempur-location-grid,
   .tempur-faq-grid,
-  .tempur-conversion-grid {
+  .tempur-conversion-grid,
+  .tempur-space-intro,
+  .tempur-space-feature,
+  .tempur-space-feature--reverse {
     grid-template-columns: 1fr;
+  }
+
+  .tempur-space-feature--reverse .tempur-space-feature-media,
+  .tempur-space-feature--reverse .tempur-space-feature-copy {
+    order: initial;
+  }
+
+  .tempur-space-seal img {
+    height: 320px;
+  }
+
+  .tempur-space-feature-media,
+  .tempur-space-feature-media img {
+    min-height: 380px;
   }
 
   .tempur-intro-heading,
@@ -6586,6 +6875,24 @@ html[data-cursor-interactive] .tempur-custom-cursor .custom-cursor-ring {
 
   .tempur-differentials article {
     padding: 1.6rem;
+  }
+
+  .tempur-space-badges {
+    gap: 0.5rem;
+  }
+
+  .tempur-space-badges li {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.72rem;
+  }
+
+  .tempur-space-seal img {
+    height: 260px;
+  }
+
+  .tempur-space-feature-media,
+  .tempur-space-feature-media img {
+    min-height: 320px;
   }
 
   .tempur-products-grid {
