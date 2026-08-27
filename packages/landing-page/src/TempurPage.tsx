@@ -214,6 +214,16 @@ const faqs = [
 
 type DataLayerWindow = Window & { dataLayer?: Record<string, unknown>[] };
 
+const TEMPUR_STORE_MAP_QUERIES = [
+  "Avenida Nazaré 550 Ipiranga São Paulo",
+  "Avenida Goiás 436 Santo Antônio São Caetano do Sul",
+];
+
+function tempurStores(region: SleepHouseRegion) {
+  const stores = region.stores.filter((store) => TEMPUR_STORE_MAP_QUERIES.includes(store.mapQuery));
+  return stores.length > 0 ? stores : region.stores;
+}
+
 function whatsappHref(region: SleepHouseRegion) {
   return `https://wa.me/${region.whatsapp}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 }
@@ -392,6 +402,7 @@ function LeadForm({ region }: { region: SleepHouseRegion }) {
 }
 
 export default function TempurPage({ region }: { region: SleepHouseRegion }) {
+  const stores = tempurStores(region);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const cursorDotRef = useRef<HTMLSpanElement>(null);
@@ -898,13 +909,13 @@ export default function TempurPage({ region }: { region: SleepHouseRegion }) {
           <div className="tempur-shell tempur-store-directory">
             <div className="tempur-store-directory-heading tempur-reveal">
               <div>
-                <p className="tempur-section-label">Todas as unidades</p>
+                <p className="tempur-section-label">Unidades com linha Tempur</p>
                 <h3>Escolha onde quer viver a experiência Tempur.</h3>
               </div>
-              <span>{region.stores.length} lojas em São Paulo e São Caetano do Sul</span>
+              <span>{stores.length} lojas com atendimento Tempur</span>
             </div>
             <div className="tempur-store-grid">
-              {region.stores.map((store, index) => (
+              {stores.map((store, index) => (
                 <article className="tempur-store-card tempur-reveal" key={`${store.name}-${store.address}`}>
                   <span className="tempur-store-number">{String(index + 1).padStart(2, "0")}</span>
                   <div>
