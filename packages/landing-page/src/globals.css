@@ -2441,7 +2441,23 @@ html[data-cursor-interactive] .custom-cursor-ring {
   font-size: 0.58rem;
 }
 
-.footer-legal span:last-child {
+.footer-company {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.footer-company p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.footer-company a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.footer-legal-note {
   text-align: right;
 }
 
@@ -2857,7 +2873,7 @@ html[data-cursor-interactive] .custom-cursor-ring {
     gap: 1.5rem;
   }
 
-  .footer-legal span:last-child {
+  .footer-legal-note {
     text-align: left;
   }
 
@@ -6505,10 +6521,16 @@ html[data-cursor-interactive] .custom-cursor-ring {
 .tempur-footer-legal {
   display: flex;
   justify-content: space-between;
+  align-items: end;
+  gap: 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-block: 1.25rem;
   color: rgba(255, 255, 255, 0.38);
   font-size: 0.6rem;
+}
+
+.tempur-footer-legal .footer-company a {
+  color: inherit;
 }
 
 .tempur-floating-cta {

@@ -17,7 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type { SleepHouseRegion } from "./SleepHouse";
+import { COMPANY_LEGAL, type SleepHouseRegion } from "./SleepHouse";
 import { captureTrackingParams } from "./tracking";
 
 const TEMPUR_FORM_WEBHOOK = "https://hook.us1.make.celonis.com/0f3y9xvvji46epnlrhe1yc47gh4jqa39";
@@ -984,7 +984,15 @@ export default function TempurPage({ region }: { region: SleepHouseRegion }) {
           </nav>
         </div>
         <div className="tempur-shell tempur-footer-legal">
-          <span>© 2026 Sleep House {region.label}. Todos os direitos reservados.</span>
+          <div className="footer-company">
+            <span>© 2026 Sleep House {region.label}. Todos os direitos reservados.</span>
+            <p>
+              {COMPANY_LEGAL.legalName}
+              <br />
+              CNPJ {COMPANY_LEGAL.cnpj} · {COMPANY_LEGAL.city}, {COMPANY_LEGAL.country} ·{" "}
+              <a href={COMPANY_LEGAL.phoneHref}>{COMPANY_LEGAL.phone}</a>
+            </p>
+          </div>
           <span>TEMPUR® é uma marca de seus respectivos proprietários.</span>
         </div>
       </footer>

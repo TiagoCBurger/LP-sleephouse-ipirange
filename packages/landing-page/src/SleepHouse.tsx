@@ -50,6 +50,15 @@ export type SleepHouseRegion = {
   }>;
 };
 
+export const COMPANY_LEGAL = {
+  legalName: "SANTA CRUZ COMERCIO DE COLCHOES LTDA",
+  cnpj: "24.763.942/0001-90",
+  city: "São Paulo",
+  country: "Brasil",
+  phone: "+55 (14) 99909-8555",
+  phoneHref: "tel:+5514999098555",
+};
+
 type Region = SleepHouseRegion;
 
 const whatsappHref = (region: Region, message = `Oi! Quero falar com a Sleep House ${region.label}.`) =>
@@ -1537,8 +1546,16 @@ export default function SleepHouse({ region, pmax = false }: { region: SleepHous
         </div>
         <div className="footer-legal">
           <div className="container">
-            <span>© 2026 Sleep House {region.label}. Todos os direitos reservados.</span>
-            <span>
+            <div className="footer-company">
+              <span>© 2026 Sleep House {region.label}. Todos os direitos reservados.</span>
+              <p>
+                {COMPANY_LEGAL.legalName}
+                <br />
+                CNPJ {COMPANY_LEGAL.cnpj} · {COMPANY_LEGAL.city}, {COMPANY_LEGAL.country} ·{" "}
+                <a href={COMPANY_LEGAL.phoneHref}>{COMPANY_LEGAL.phone}</a>
+              </p>
+            </div>
+            <span className="footer-legal-note">
               Marcas premium · consultoria especializada
               <br />Entrega em até 72h e montagem gratuita em condições selecionadas
             </span>
